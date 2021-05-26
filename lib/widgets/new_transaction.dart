@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'adaptive_button.dart';
 
 typedef void CallbackForTransaction(
     String txTitle, double txAmount, DateTime chosenDate);
@@ -51,49 +56,66 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Title'),
-              controller: titleController,
-              keyboardType: TextInputType.text,
-              // onChanged: (value) => titleInput = value,
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Amount'),
-              controller: amountController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onSubmitted: (_) => _submitData(),
-            ),
-            Container(
-              height: 70,
-              child: Row(children: <Widget>[
-                Expanded(
-                  child: Text(
-                    _selectedDate == null
-                        ? 'No Date Chosen'
-                        : 'Picked date : ${DateFormat.yMd().format(_selectedDate)}',
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Container(
+          padding: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+          child: Column(
+            children: [
+              if (Platform.isIOS)
+                CupertinoTextField(
+                  placeholder: 'Title',
+                  controller: titleController,
+                  keyboardType: TextInputType.text,
+                  // onChanged: (value) => titleInput = value,
+                ),
+              if (Platform.isIOS)
+                CupertinoTextField(
+                  placeholder: 'Amount',
+                  controller: amountController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  onSubmitted: (_) => _submitData(),
+                ),
+              if (Platform.isAndroid)
+                TextField(
+                  decoration: InputDecoration(labelText: 'Title'),
+                  controller: titleController,
+                  keyboardType: TextInputType.text,
+                  // onChanged: (value) => titleInput = value,
+                ),
+              if (Platform.isAndroid)
+                TextField(
+                  decoration: InputDecoration(labelText: 'Amount'),
+                  controller: amountController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  onSubmitted: (_) => _submitData(),
+                ),
+              Container(
+                height: 70,
+                child: Row(children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null
+                          ? 'No Date Chosen'
+                          : 'Picked date : ${DateFormat.yMd().format(_selectedDate)}',
+                    ),
                   ),
-                ),
-                FlatButton(
-                  child: Text('Choose Date',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  textColor: Theme.of(context).primaryColor,
-                  onPressed: _presentDatePicker,
-                ),
-              ]),
-            ),
-            RaisedButton(
-              child: Text('Add Transaction'),
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).textTheme.button!.color,
-              onPressed: _submitData,
-            )
-          ],
+                ]),
+              ),
+              RaisedButton(
+                child: Text('Add Transaction'),
+                color: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).textTheme.button!.color,
+                onPressed: _submitData,
+              ),
+              AdaptiveButton('Choose Date', _presentDatePicker),
+            ],
+          ),
         ),
       ),
     );

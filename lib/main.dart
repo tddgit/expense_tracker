@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expense_tracker/widgets/chart.dart';
 import 'package:flutter_expense_tracker/widgets/new_transaction.dart';
@@ -5,7 +8,13 @@ import 'package:flutter_expense_tracker/widgets/transaction_list.dart';
 
 import 'models/transaction.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations(
+  //   [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  // );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -16,6 +25,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         accentColor: Colors.amber,
         fontFamily: 'Quicksand',
+        errorColor: Colors.red,
         textTheme: ThemeData.light().textTheme.copyWith(
               headline6: TextStyle(
                 fontFamily: 'OpenSans',
@@ -148,38 +158,105 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool _showChart = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter App',
-            style: TextStyle(
-              fontFamily: 'OpenSans',
-            )),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          ),
+    print('build() MyHomePage');
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text(
+              'Personal Expenses (iOS)',
+            ),
+            trailing: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: Icon(CupertinoIcons.add),
+                  onTap: () => _startAddNewTransaction(context),
+                ),
+              ],
+            ),
+          )
+        : (AppBar(
+            title: Text('Personal Expenses (Android)',
+                style: TextStyle(
+                  fontFamily: 'OpenSans',
+                )),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () => _startAddNewTransaction(context),
+              ),
+            ],
+          ) as ObstructingPreferredSizeWidget);
+
+    final screenHeight = mediaQuery.size.height -
+        appBar.preferredSize.height -
+        mediaQuery.padding.top;
+
+    final TransactionListWidget = Container(
+      height: screenHeight * 1,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
+
+    final ChartWidgetBig =
+        Container(height: screenHeight * 0.7, child: Chart(_recentTransaction));
+
+    final ChartWidgetSmall =
+        Container(height: screenHeight * 0.3, child: Chart(_recentTransaction));
+
+    final bodyWidget = SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          if (isLandscape)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Show Chart',
+                    style: Theme.of(context).textTheme.headline6),
+                Switch.adaptive(
+                  value: _showChart,
+                  onChanged: (flag) {
+                    setState(
+                      () {
+                        _showChart = flag;
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          if (!isLandscape) ChartWidgetSmall,
+          if (!isLandscape) TransactionListWidget,
+          if (isLandscape)
+            _showChart == true ? ChartWidgetBig : TransactionListWidget,
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _startAddNewTransaction(context),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Chart(_recentTransaction),
-              TransactionList(_userTransactions, _deleteTransaction),
-            ],
-          ),
-        ),
-      ),
     );
+
+    return Platform.isAndroid
+        ? Scaffold(
+            appBar: appBar,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () => _startAddNewTransaction(context),
+                  ),
+            body: bodyWidget,
+          )
+        : CupertinoPageScaffold(
+            child: SafeArea(child: bodyWidget),
+            navigationBar: appBar as ObstructingPreferredSizeWidget,
+          );
   }
 }

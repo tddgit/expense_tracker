@@ -3,9 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expense_tracker/widgets/adaptive_button.dart';
 import 'package:intl/intl.dart';
-
-import 'adaptive_button.dart';
 
 typedef CallbackForTransaction = void Function(
     String txTitle, double txAmount, DateTime? chosenDate);
@@ -17,6 +16,14 @@ class NewTransaction extends StatefulWidget {
 
   @override
   _NewTransactionState createState() => _NewTransactionState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+      ObjectFlagProperty<CallbackForTransaction>.has('addTx', addTx),
+    );
+  }
 }
 
 class _NewTransactionState extends State<NewTransaction> {
@@ -69,7 +76,7 @@ class _NewTransactionState extends State<NewTransaction> {
             bottom: MediaQuery.of(context).viewInsets.bottom + 10,
           ),
           child: Column(
-            children: [
+            children: <Widget>[
               if (Platform.isIOS)
                 CupertinoTextField(
                   placeholder: 'Title',
@@ -100,14 +107,15 @@ class _NewTransactionState extends State<NewTransaction> {
                       const TextInputType.numberWithOptions(decimal: true),
                   onSubmitted: (_) => _submitData(),
                 ),
-              Container(
+              SizedBox(
                 height: 70,
                 child: Row(children: <Widget>[
                   Expanded(
                     child: Text(
                       _selectedDate == null
                           ? 'No Date Chosen'
-                          : 'Picked date : ${DateFormat.yMd().format(_selectedDate!)}',
+                          : 'Picked date' +
+                              ': ${DateFormat.yMd().format(_selectedDate!)}',
                     ),
                   ),
                 ]),

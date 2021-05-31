@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'adaptive_button.dart';
 
-typedef void CallbackForTransaction(
+typedef CallbackForTransaction = void Function(
     String txTitle, double txAmount, DateTime chosenDate);
 
 class NewTransaction extends StatefulWidget {
@@ -27,7 +27,7 @@ class _NewTransactionState extends State<NewTransaction> {
     try {
       final enteredTitle = titleController.text;
       final enteredAmount = double.parse(amountController.text);
-      if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null) {
+      if (enteredTitle.isEmpty || enteredAmount <= 0) {
         return;
       }
       widget.addTx(enteredTitle, enteredAmount, _selectedDate);
@@ -78,21 +78,23 @@ class _NewTransactionState extends State<NewTransaction> {
                 CupertinoTextField(
                   placeholder: 'Amount',
                   controller: amountController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onSubmitted: (_) => _submitData(),
                 ),
               if (Platform.isAndroid)
                 TextField(
-                  decoration: InputDecoration(labelText: 'Title'),
+                  decoration: const InputDecoration(labelText: 'Title'),
                   controller: titleController,
                   keyboardType: TextInputType.text,
                   // onChanged: (value) => titleInput = value,
                 ),
               if (Platform.isAndroid)
                 TextField(
-                  decoration: InputDecoration(labelText: 'Amount'),
+                  decoration: const InputDecoration(labelText: 'Amount'),
                   controller: amountController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onSubmitted: (_) => _submitData(),
                 ),
               Container(
@@ -108,10 +110,10 @@ class _NewTransactionState extends State<NewTransaction> {
                 ]),
               ),
               RaisedButton(
-                child: Text('Add Transaction'),
                 color: Theme.of(context).primaryColor,
                 textColor: Theme.of(context).textTheme.button!.color,
                 onPressed: _submitData,
+                child: const Text('Add Transaction'),
               ),
               AdaptiveButton('Choose Date', _presentDatePicker),
             ],

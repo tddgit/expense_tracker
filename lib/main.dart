@@ -32,14 +32,14 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
-              button: TextStyle(
+              button: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
-                headline6: TextStyle(
+                headline6: const TextStyle(
                   fontFamily: 'OpenSans',
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _addNewTransaction(
       String txTitle, double txAmount, DateTime chosenDate) {
-    final newTx = Transaction(
+    final Transaction newTx = Transaction(
       title: txTitle,
       amount: txAmount,
       date: chosenDate,
@@ -143,8 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (_) {
         return GestureDetector(
           onTap: () {},
-          child: NewTransaction(_addNewTransaction),
           behavior: HitTestBehavior.opaque,
+          child: NewTransaction(_addNewTransaction),
         );
       },
     );
@@ -163,12 +163,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     print('build() MyHomePage');
-    final mediaQuery = MediaQuery.of(context);
-    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
 
     final PreferredSizeWidget appBar = Platform.isIOS
         ? CupertinoNavigationBar(
-            middle: Text(
+            middle: const Text(
               'Personal Expenses (iOS)',
             ),
             trailing: Row(
@@ -176,41 +176,41 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 GestureDetector(
-                  child: Icon(CupertinoIcons.add),
                   onTap: () => _startAddNewTransaction(context),
+                  child: const Icon(CupertinoIcons.add),
                 ),
               ],
             ),
           )
         : (AppBar(
-            title: Text('Personal Expenses (Android)',
+            title: const Text('Personal Expenses (Android)',
                 style: TextStyle(
                   fontFamily: 'OpenSans',
                 )),
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.add),
+                icon: const Icon(Icons.add),
                 onPressed: () => _startAddNewTransaction(context),
               ),
             ],
           ) as ObstructingPreferredSizeWidget);
 
-    final screenHeight = mediaQuery.size.height -
+    final double screenHeight = mediaQuery.size.height -
         appBar.preferredSize.height -
         mediaQuery.padding.top;
 
-    final TransactionListWidget = Container(
+    final Container transactionListWidget = Container(
       height: screenHeight * 1,
       child: TransactionList(_userTransactions, _deleteTransaction),
     );
 
-    final ChartWidgetBig =
+    final Container chartWidgetBig =
         Container(height: screenHeight * 0.7, child: Chart(_recentTransaction));
 
-    final ChartWidgetSmall =
+    final Container ChartWidgetSmall =
         Container(height: screenHeight * 0.3, child: Chart(_recentTransaction));
 
-    final bodyWidget = SingleChildScrollView(
+    final SingleChildScrollView bodyWidget = SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -223,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: Theme.of(context).textTheme.headline6),
                 Switch.adaptive(
                   value: _showChart,
-                  onChanged: (flag) {
+                  onChanged: (bool flag) {
                     setState(
                       () {
                         _showChart = flag;
@@ -234,9 +234,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           if (!isLandscape) ChartWidgetSmall,
-          if (!isLandscape) TransactionListWidget,
+          if (!isLandscape) transactionListWidget,
           if (isLandscape)
-            _showChart == true ? ChartWidgetBig : TransactionListWidget,
+            _showChart == true ? chartWidgetBig : transactionListWidget,
         ],
       ),
     );
@@ -249,14 +249,14 @@ class _MyHomePageState extends State<MyHomePage> {
             floatingActionButton: Platform.isIOS
                 ? Container()
                 : FloatingActionButton(
-                    child: Icon(Icons.add),
                     onPressed: () => _startAddNewTransaction(context),
+                    child: const Icon(Icons.add),
                   ),
             body: bodyWidget,
           )
         : CupertinoPageScaffold(
-            child: SafeArea(child: bodyWidget),
             navigationBar: appBar as ObstructingPreferredSizeWidget,
+            child: SafeArea(child: bodyWidget),
           );
   }
 }

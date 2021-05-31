@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expense_tracker/models/transaction.dart';
+import 'package:flutter_expense_tracker/widgets/chart_bar.dart';
 import 'package:intl/intl.dart';
-
-import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
   final List<Transaction> recentTransactions;
@@ -13,7 +12,7 @@ class Chart extends StatelessWidget {
   }
 
   List<Map<String, Object>> get groupedTransactionValues {
-    return List.generate(7, (int index) {
+    return List<Map<String, Object>>.generate(7, (int index) {
       final DateTime weekDay = DateTime.now().subtract(
         Duration(days: index),
       );
@@ -36,9 +35,9 @@ class Chart extends StatelessWidget {
   }
 
   double get totalSpending {
-    return groupedTransactionValues.fold(0.0,
+    return groupedTransactionValues.fold(0,
         (double sum, Map<String, Object> item) {
-      return sum + (item['amount'] as double);
+      return sum + (item['amount']! as double);
     });
   }
 
@@ -56,11 +55,11 @@ class Chart extends StatelessWidget {
             (Map<String, Object> data) {
               return Flexible(
                 child: ChartBar(
-                  (data['day'] as String),
-                  (data['amount'] as double),
+                  data['day']! as String,
+                  data['amount']! as double,
                   totalSpending == 0
                       ? 0
-                      : (data['amount'] as double) / totalSpending,
+                      : (data['amount']! as double) / totalSpending,
                 ),
               );
             },
@@ -73,8 +72,11 @@ class Chart extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IterableProperty<Map<String, Object>>(
-        'groupedTransactionValues', groupedTransactionValues));
-    properties.add(DoubleProperty('totalSpending', totalSpending));
+    properties
+      ..add(IterableProperty<Map<String, Object>>(
+          'groupedTransactionValues', groupedTransactionValues))
+      ..add(DoubleProperty('totalSpending', totalSpending))
+      ..add(IterableProperty<Transaction>(
+          'recentTransactions', recentTransactions));
   }
 }

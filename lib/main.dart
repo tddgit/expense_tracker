@@ -58,7 +58,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [
+  final List<Transaction> _userTransactions = <Transaction>[
     Transaction(
       id: 't1',
       title: 'New Shoes',
@@ -69,52 +69,52 @@ class _MyHomePageState extends State<MyHomePage> {
       id: 't2',
       title: 'Weekly Groceries',
       amount: 89.99,
-      date: DateTime.now().subtract(Duration(days: 2)),
+      date: DateTime.now().subtract(const Duration(days: 2)),
     ),
     Transaction(
       id: 't1',
       title: 'New Shoes',
       amount: 69.99,
-      date: DateTime.now().subtract(Duration(days: 1)),
+      date: DateTime.now().subtract(const Duration(days: 1)),
     ),
     Transaction(
       id: 't2',
       title: 'Weekly Groceries',
       amount: 89.99,
-      date: DateTime.now().subtract(Duration(days: 3)),
+      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
     Transaction(
       id: 't1',
       title: 'New Shoes',
       amount: 69.99,
-      date: DateTime.now().subtract(Duration(days: 3)),
+      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
     Transaction(
       id: 't2',
       title: 'Weekly Groceries',
       amount: 89.99,
-      date: DateTime.now().subtract(Duration(days: 3)),
+      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
     Transaction(
       id: 't1',
       title: 'New Shoes',
       amount: 69.99,
-      date: DateTime.now().subtract(Duration(days: 6)),
+      date: DateTime.now().subtract(const Duration(days: 6)),
     ),
     Transaction(
       id: 't2',
       title: 'Weekly Groceries',
       amount: 89.99,
-      date: DateTime.now().subtract(Duration(days: 7)),
+      date: DateTime.now().subtract(const Duration(days: 7)),
     ),
   ];
 
   List<Transaction> get _recentTransaction {
     return _userTransactions.where(
-      (tx) {
+      (Transaction tx) {
         return tx.date.isAfter(
           DateTime.now().subtract(
-            Duration(days: 7),
+            const Duration(days: 7),
           ),
         );
       },
@@ -138,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startAddNewTransaction(BuildContext ctx) {
-    showModalBottomSheet(
+    showModalBottomSheet<NewTransaction>(
       context: ctx,
       builder: (_) {
         return GestureDetector(
@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _deleteTransaction(String id) {
     setState(() {
-      _userTransactions.removeWhere((tx) {
+      _userTransactions.removeWhere((Transaction tx) {
         return tx.id == id;
       });
     });
@@ -199,16 +199,16 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar.preferredSize.height -
         mediaQuery.padding.top;
 
-    final Container transactionListWidget = Container(
+    final Widget transactionListWidget = SizedBox(
       height: screenHeight * 1,
       child: TransactionList(_userTransactions, _deleteTransaction),
     );
 
-    final Container chartWidgetBig =
-        Container(height: screenHeight * 0.7, child: Chart(_recentTransaction));
+    final Widget chartWidgetBig =
+        SizedBox(height: screenHeight * 0.7, child: Chart(_recentTransaction));
 
-    final Container ChartWidgetSmall =
-        Container(height: screenHeight * 0.3, child: Chart(_recentTransaction));
+    final Widget chartWidgetSmall =
+        SizedBox(height: screenHeight * 0.3, child: Chart(_recentTransaction));
 
     final SingleChildScrollView bodyWidget = SingleChildScrollView(
       child: Column(
@@ -233,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-          if (!isLandscape) ChartWidgetSmall,
+          if (!isLandscape) chartWidgetSmall,
           if (!isLandscape) transactionListWidget,
           if (isLandscape)
             _showChart == true ? chartWidgetBig : transactionListWidget,

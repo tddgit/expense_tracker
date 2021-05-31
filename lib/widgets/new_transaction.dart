@@ -7,7 +7,7 @@ import 'package:flutter_expense_tracker/widgets/adaptive_button.dart';
 import 'package:intl/intl.dart';
 
 typedef CallbackForTransaction = void Function(
-    String txTitle, double txAmount, DateTime? chosenDate);
+    String txTitle, double txAmount, DateTime chosenDate);
 
 class NewTransaction extends StatefulWidget {
   final CallbackForTransaction addTx;
@@ -29,7 +29,7 @@ class NewTransaction extends StatefulWidget {
 class _NewTransactionState extends State<NewTransaction> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
-  late DateTime? _selectedDate = DateTime.now();
+  late DateTime _selectedDate = DateTime.now();
 
   void _submitData() {
     try {
@@ -115,7 +115,7 @@ class _NewTransactionState extends State<NewTransaction> {
                       _selectedDate == null
                           ? 'No Date Chosen'
                           : 'Picked date' +
-                              ': ${DateFormat.yMd().format(_selectedDate!)}',
+                              ': ${DateFormat.yMd().format(_selectedDate)}',
                     ),
                   ),
                 ]),

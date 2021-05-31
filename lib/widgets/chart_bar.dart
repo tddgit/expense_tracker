@@ -15,7 +15,7 @@ class ChartBar extends StatelessWidget {
       builder: (BuildContext ctx, BoxConstraints constraints) {
         return Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               height: constraints.maxHeight * 0.15,
               child: FittedBox(
                 child: Text('\$${spendingAmount.toStringAsFixed(0)}'),
@@ -24,7 +24,7 @@ class ChartBar extends StatelessWidget {
             SizedBox(
               height: constraints.maxHeight * 0.05,
             ),
-            Container(
+            SizedBox(
               height: constraints.maxHeight * 0.6,
               width: 10,
               child: Stack(
@@ -33,7 +33,6 @@ class ChartBar extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.grey,
-                        width: 1.0,
                       ),
                       color: const Color.fromRGBO(220, 220, 220, 1),
                       borderRadius: BorderRadius.circular(10),
@@ -45,7 +44,6 @@ class ChartBar extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: Theme.of(context).primaryColor,
-                            width: 1.0,
                           ),
                           color: Theme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(10),
@@ -57,7 +55,7 @@ class ChartBar extends StatelessWidget {
             SizedBox(
               height: constraints.maxHeight * 0.05,
             ),
-            Container(
+            SizedBox(
               height: constraints.maxHeight * 0.15,
               child: FittedBox(
                 child: Text(label),
@@ -72,8 +70,9 @@ class ChartBar extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty('label', label));
-    properties.add(DoubleProperty('spendingAmount', spendingAmount));
-    properties.add(DoubleProperty('spendingPctOfTotal', spendingPctOfTotal));
+    properties
+      ..add(StringProperty('label', label))
+      ..add(DoubleProperty('spendingAmount', spendingAmount))
+      ..add(DoubleProperty('spendingPctOfTotal', spendingPctOfTotal));
   }
 }

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Quicksand',
         errorColor: Colors.red,
         textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
+              headline6: const TextStyle(
                 fontFamily: 'OpenSans',
                 fontWeight: FontWeight.bold,
                 fontSize: 18,

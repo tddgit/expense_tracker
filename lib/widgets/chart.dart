@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expense_tracker/models/transaction.dart';
 import 'package:intl/intl.dart';
@@ -12,14 +13,14 @@ class Chart extends StatelessWidget {
   }
 
   List<Map<String, Object>> get groupedTransactionValues {
-    return List.generate(7, (index) {
-      final weekDay = DateTime.now().subtract(
+    return List.generate(7, (int index) {
+      final DateTime weekDay = DateTime.now().subtract(
         Duration(days: index),
       );
 
       double totalSum = 0;
 
-      for (var i = 0; i < recentTransactions.length; i++) {
+      for (int i = 0; i < recentTransactions.length; i++) {
         if (recentTransactions[i].date.day == weekDay.day &&
             recentTransactions[i].date.month == weekDay.month &&
             recentTransactions[i].date.year == weekDay.year) {
@@ -27,12 +28,16 @@ class Chart extends StatelessWidget {
         }
       }
 
-      return {'day': DateFormat.E().format(weekDay), 'amount': totalSum};
+      return <String, Object>{
+        'day': DateFormat.E().format(weekDay),
+        'amount': totalSum
+      };
     }).reversed.toList();
   }
 
   double get totalSpending {
-    return groupedTransactionValues.fold(0.0, (sum, item) {
+    return groupedTransactionValues.fold(0.0,
+        (double sum, Map<String, Object> item) {
       return sum + (item['amount'] as double);
     });
   }
@@ -42,13 +47,13 @@ class Chart extends StatelessWidget {
     print('build() Chart');
     return Card(
       elevation: 6,
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: groupedTransactionValues.map(
-            (data) {
+            (Map<String, Object> data) {
               return Flexible(
                 child: ChartBar(
                   (data['day'] as String),
@@ -63,5 +68,13 @@ class Chart extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<Map<String, Object>>(
+        'groupedTransactionValues', groupedTransactionValues));
+    properties.add(DoubleProperty('totalSpending', totalSpending));
   }
 }

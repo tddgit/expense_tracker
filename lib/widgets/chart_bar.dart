@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ChartBar extends StatelessWidget {
@@ -11,7 +12,7 @@ class ChartBar extends StatelessWidget {
   Widget build(BuildContext context) {
     print('build() ChartBar');
     return LayoutBuilder(
-      builder: (ctx, constraints) {
+      builder: (BuildContext ctx, BoxConstraints constraints) {
         return Column(
           children: <Widget>[
             Container(
@@ -34,7 +35,7 @@ class ChartBar extends StatelessWidget {
                         color: Colors.grey,
                         width: 1.0,
                       ),
-                      color: Color.fromRGBO(220, 220, 220, 1),
+                      color: const Color.fromRGBO(220, 220, 220, 1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -66,5 +67,13 @@ class ChartBar extends StatelessWidget {
         );
       },
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('label', label));
+    properties.add(DoubleProperty('spendingAmount', spendingAmount));
+    properties.add(DoubleProperty('spendingPctOfTotal', spendingPctOfTotal));
   }
 }

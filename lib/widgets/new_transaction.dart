@@ -1,38 +1,40 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'adaptive_button.dart';
 
 typedef CallbackForTransaction = void Function(
-    String txTitle, double txAmount, DateTime chosenDate);
+    String txTitle, double txAmount, DateTime? chosenDate);
 
 class NewTransaction extends StatefulWidget {
   final CallbackForTransaction addTx;
 
-  NewTransaction(this.addTx);
+  const NewTransaction(this.addTx);
 
   @override
   _NewTransactionState createState() => _NewTransactionState();
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
-  late DateTime _selectedDate = DateTime.now();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
+  late DateTime? _selectedDate = DateTime.now();
 
   void _submitData() {
     try {
-      final enteredTitle = titleController.text;
-      final enteredAmount = double.parse(amountController.text);
+      final String enteredTitle = titleController.text;
+      final double enteredAmount = double.parse(amountController.text);
       if (enteredTitle.isEmpty || enteredAmount <= 0) {
         return;
       }
       widget.addTx(enteredTitle, enteredAmount, _selectedDate);
 
       Navigator.of(context).pop();
+      // ignore: avoid_catches_without_on_clauses
     } catch (err) {
       amountController.clear();
     }
@@ -44,7 +46,7 @@ class _NewTransactionState extends State<NewTransaction> {
       initialDate: DateTime.now(),
       firstDate: DateTime(DateTime.now().year),
       lastDate: DateTime.now(),
-    ).then((pickedDate) {
+    ).then((DateTime? pickedDate) {
       if (pickedDate == null) {
         return;
       }
@@ -61,10 +63,11 @@ class _NewTransactionState extends State<NewTransaction> {
         elevation: 5,
         child: Container(
           padding: EdgeInsets.only(
-              top: 10,
-              left: 10,
-              right: 10,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+            top: 10,
+            left: 10,
+            right: 10,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+          ),
           child: Column(
             children: [
               if (Platform.isIOS)
@@ -104,7 +107,7 @@ class _NewTransactionState extends State<NewTransaction> {
                     child: Text(
                       _selectedDate == null
                           ? 'No Date Chosen'
-                          : 'Picked date : ${DateFormat.yMd().format(_selectedDate)}',
+                          : 'Picked date : ${DateFormat.yMd().format(_selectedDate!)}',
                     ),
                   ),
                 ]),
@@ -120,6 +123,17 @@ class _NewTransactionState extends State<NewTransaction> {
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'titleController', titleController));
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+          'amountController', amountController),
     );
   }
 }
